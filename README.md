@@ -1,6 +1,7 @@
-jsprofiler - stand-alone Javascript profiler + simple widget
+jsprofiler
 ==========
 
+Stand-alone Javascript profiler + simple widget.
 Using this profiler allows to find bottlenecks of your javascript application on any platform that.
 
 Usage
