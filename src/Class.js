@@ -8,6 +8,9 @@
  * (if child/base class property equals ABSTRACT_METHOD, Class will throw error)
  */
 
+/**
+ * @namespace
+ */
 var ibNameSpace = ibNameSpace || {};
 
 (function () {
@@ -18,7 +21,7 @@ var ibNameSpace = ibNameSpace || {};
 	 *  @class
 	 *  @constructor
 	 */
-	function Class() {
+	function Class () {
 	}
 
 	ibNameSpace.Class = Class;
@@ -27,7 +30,8 @@ var ibNameSpace = ibNameSpace || {};
 	 * @public
 	 * @type {function}
 	 */
-	Class.ABSTRACT_METHOD = function() {};
+	Class.ABSTRACT_METHOD = function () {
+	};
 
 	/**
 	 * Create a new Class that inherits from this class

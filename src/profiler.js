@@ -1,3 +1,6 @@
+/**
+ * @namespace
+ */
 var ibNameSpace = ibNameSpace || {};
 
 (function () {
@@ -34,7 +37,7 @@ var ibNameSpace = ibNameSpace || {};
 	 * @class ProfilerWidgetConfiguration
 	 * @constructor
 	 */
-	var ProfilerWidgetConfiguration = ibNameSpace.Class.extend(/** @lends {ProfilerWidgetConfiguration} */ {
+	var ProfilerWidgetConfiguration = ibNameSpace.Class.extend(/** lends {ProfilerWidgetConfiguration} */ {
 		/**
 		 * @private
 		 */
@@ -67,7 +70,7 @@ var ibNameSpace = ibNameSpace || {};
 			 * @public
 			 * @type {number}
 			 */
-			this.timeChnagedRowsShown = 2000;
+			this.timeChangedRowsShown = 2000;
 
 			/**
 			 * @public
@@ -366,7 +369,7 @@ var ibNameSpace = ibNameSpace || {};
 				}
 
 				// sort by total execution time
-				if(widgetConfiguration.sortMethod) {
+				if (widgetConfiguration.sortMethod) {
 					report.sort(widgetConfiguration.sortMethod);
 				}
 
@@ -375,7 +378,7 @@ var ibNameSpace = ibNameSpace || {};
 					if (i < report.length) {
 						var d = report[i];
 						updateTableRow(
-							widgetConfiguration.showChangedRows && (time - d.lastCallTime < widgetConfiguration.timeChnagedRowsShown),
+							widgetConfiguration.showChangedRows && (time - d.lastCallTime < widgetConfiguration.timeChangedRowsShown),
 							i, d.id, d.selfTotal, d.total, d.max, d.min, d.calls
 						);
 						d.updated = false;
