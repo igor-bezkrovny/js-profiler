@@ -3,7 +3,7 @@ jsprofiler
 
 Stand-alone Javascript profiler + simple widget.
 
-Using this profiler allows to find bottlenecks of your javascript application on any platform that.
+Using this profiler allows to find bottlenecks of your javascript application.
 
 Usage
 =====
