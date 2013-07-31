@@ -247,9 +247,7 @@ var ibNameSpace = ibNameSpace || {};
 		 * @param {boolean} [recursively]
 		 */
 		profileObject : function (name, object, recursively) {
-			if (object && typeof object === 'object' && !object.____PPROFILED) {
-				object.____PPROFILED = true;
-
+			if (object && typeof object === 'object') {
 				for (var propertyName in object) {
 					if (Object.prototype.hasOwnProperty.call(object, propertyName)) {
 						if (typeof object[propertyName] === 'function') {
