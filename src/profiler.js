@@ -150,7 +150,7 @@ var ibNameSpace = ibNameSpace || {};
 
 	// Widget data
 	var isWidgetAttached = false,
-		widgetId = "profilerWidgetV1.2",
+		widgetId = "profilerWidgetV1.3",
 		widgetIntervalId = null,
 		widgetConfiguration = new ProfilerWidgetConfiguration();
 
@@ -218,7 +218,7 @@ var ibNameSpace = ibNameSpace || {};
 		/**
 		 * @public
 		 * @param {string} name
-		 * @param {function} owner
+		 * @param {object} owner
 		 * @param {boolean} profilePrototype
 		 */
 		profileFunction : function (name, owner, profilePrototype) {
@@ -247,16 +247,15 @@ var ibNameSpace = ibNameSpace || {};
 		 * @param {boolean} [recursively]
 		 */
 		profileObject : function (name, object, recursively) {
-			if (object && typeof object === 'object') {
-				for (var propertyName in object) {
-					if (Object.prototype.hasOwnProperty.call(object, propertyName)) {
-						if (typeof object[propertyName] === 'function') {
-							if (propertyName != "constructor" && propertyName != "_super") {
-								this.profileFunction(name + "." + propertyName, object, typeof object[propertyName]["prototype"] === "object");
-							}
-						} else if (recursively && typeof object[propertyName] === "object" && !(object[propertyName] instanceof Array)) {
-							this.profileObject(name + "." + propertyName, object[propertyName], recursively);
+			for (var propertyName in object) {
+				if (Object.prototype.hasOwnProperty.call(object, propertyName)) {
+					if (ibNameSpace.utils.isFunction(object[propertyName])) {
+						if (propertyName != "constructor" && propertyName != "_super") {
+							this.profileFunction(name + "." + propertyName, object, typeof object[propertyName]["prototype"] === "object");
 						}
+					} else if (recursively && ibNameSpace.utils.isObject(object[propertyName]) && !object[propertyName].____PPROFILED) {
+						object[propertyName].____PPROFILED = true;
+						this.profileObject(name + "." + propertyName, object[propertyName], recursively);
 					}
 				}
 			}

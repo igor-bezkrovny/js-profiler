@@ -40,7 +40,44 @@ var ibNameSpace = ibNameSpace || {};
 		 * @returns {boolean}
 		 */
 		isObject : function (param) {
-			return !!(param && (typeof param === 'object' || this.isFunction(param)));
+			var otherType = this.isString(param) || this.isNumber(param) || this.isArray(param) || this.isBoolean(param);
+			return param !== null && (typeof param === 'object') && !otherType;
+		},
+
+		/**
+		 * @public
+		 * @param {*} param
+		 * @returns {boolean}
+		 */
+		isNumber : function (param) {
+			return typeof param === 'number';
+		},
+
+		/**
+		 * @public
+		 * @param {*} param
+		 * @returns {boolean}
+		 */
+		isArray : function (param) {
+			return param && typeof param === 'object' && (param instanceof Array);
+		},
+
+		/**
+		 * @public
+		 * @param {*} param
+		 * @returns {boolean}
+		 */
+		isBoolean : function (param) {
+			return typeof param === 'boolean';
+		},
+
+		/**
+		 * @public
+		 * @param {*} param
+		 * @returns {boolean}
+		 */
+		isUndefined : function (param) {
+			return typeof param === 'undefined';
 		},
 
 		/**
@@ -49,7 +86,7 @@ var ibNameSpace = ibNameSpace || {};
 		 * @returns {boolean}
 		 */
 		isString : function (param) {
-			return !!(param && ((typeof param === 'string') || (typeof param[constructor] !== 'undefined' && param.constructor === String)));
+			return typeof param === 'string';
 		},
 
 		/**

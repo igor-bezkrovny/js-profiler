@@ -1,4 +1,4 @@
-jsprofiler
+jsprofiler v1.3
 ==========
 
 Stand-alone Javascript profiler + simple widget.
@@ -38,6 +38,15 @@ p.continueProfiler();
 p.getProfilerWidgetConfiguration().sortMethod = p.widgetSortMethods.bySelfTotalTime;
 
 FULL API
-===
+========
 
 See JSDoc's in profile.js for full API and parameter names/types
+
+Changelog
+=========
+
+*1.3*
+
+Added protection against recursive objects.
+
+*1.2* initial commit
