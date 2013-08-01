@@ -2,7 +2,6 @@ jsprofiler v1.3
 ==========
 
 Stand-alone Javascript profiler + simple widget.
-
 Using this profiler allows to find bottlenecks of your javascript application.
 
 Usage
@@ -35,7 +34,7 @@ p.continueProfiler();
 p.getProfilerWidgetConfiguration().sortMethod = p.widgetSortMethods.bySelfTotalTime;
 ```
 
-FULL API
+Full API
 ========
 
 See JSDoc's in profile.js for full API and parameter names/types
