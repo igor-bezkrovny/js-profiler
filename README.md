@@ -43,8 +43,8 @@ See JSDoc's in profile.js for full API and parameter names/types
 Changelog
 =========
 
-*1.3*
+1.3
 Added protection against recursive objects.
 
-*1.2*
+1.2
 initial commit
