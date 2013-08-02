@@ -148,9 +148,11 @@ var ibNameSpace = ibNameSpace || {};
 	/** @type {Array.<ProfilerRecord>} */
 	var profilerRecords = [];
 
+	var getPropertyDescriptorAvailable = !!(typeof Object.getOwnPropertyDescriptor !== 'undefined' && Object.getOwnPropertyDescriptor);
+
 	// Widget data
 	var isWidgetAttached = false,
-		widgetId = "profilerWidgetV1.3",
+		widgetId = "profilerWidgetV1.4",
 		widgetIntervalId = null,
 		widgetConfiguration = new ProfilerWidgetConfiguration();
 
@@ -249,13 +251,33 @@ var ibNameSpace = ibNameSpace || {};
 		profileObject : function (name, object, recursively) {
 			for (var propertyName in object) {
 				if (Object.prototype.hasOwnProperty.call(object, propertyName)) {
-					if (ibNameSpace.utils.isFunction(object[propertyName])) {
-						if (propertyName != "constructor" && propertyName != "_super") {
-							this.profileFunction(name + "." + propertyName, object, typeof object[propertyName]["prototype"] === "object");
+					// we can't profile properties defined with defineProperty
+					// also we can't access to getters because in this case we
+					// can't provide getter with correct "this" and getter will crash within application.
+					var canBeProfiled = true;
+					if (getPropertyDescriptorAvailable) {
+						var desc = Object.getOwnPropertyDescriptor(object, propertyName);
+						canBeProfiled = (typeof desc.writable === 'undefined' || desc.writable === true) && (typeof desc.get === 'undefined' || desc.get === undefined) && (typeof desc.set === 'undefined' || desc.set === undefined) && !desc.get && !desc.set;
+					}
+
+					if (canBeProfiled) {
+						if (ibNameSpace.utils.isFunction(object[propertyName])) {
+							if (propertyName != "constructor" && propertyName != "_super") {
+								this.profileFunction(name + "." + propertyName, object, typeof object[propertyName]["prototype"] === "object");
+							}
+						} else if (recursively && ibNameSpace.utils.isObject(object[propertyName]) && !object[propertyName].____PPROFILED) {
+							try {
+								// mark object as profiled
+								object[propertyName].____PPROFILED = true;
+
+								// if it is property returned by get or native property/array, "profiled" flag will not be set - skip this object!
+								if (object[propertyName].____PPROFILED) {
+									this.profileObject(name + "." + propertyName, object[propertyName], recursively);
+								}
+							} catch (e) {
+								console.log("profiler exception: " + e);
+							}
 						}
-					} else if (recursively && ibNameSpace.utils.isObject(object[propertyName]) && !object[propertyName].____PPROFILED) {
-						object[propertyName].____PPROFILED = true;
-						this.profileObject(name + "." + propertyName, object[propertyName], recursively);
 					}
 				}
 			}
