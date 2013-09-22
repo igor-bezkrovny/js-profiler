@@ -4,7 +4,7 @@ TODO:
 esprima profiler added.
 * separate widget from profiler
 * refactor code
-* update readme.md (and describe two profilers)
+* update readme.md (and describe both profilers)
 
 jsprofiler v1.3
 ==========
