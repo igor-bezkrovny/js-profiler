@@ -1,0 +1,76 @@
+module.exports = {
+
+	esCodeGenOptions : {
+		format            : {
+			indent      : {
+				style : '	',
+				base  : 0
+			},
+			json        : true,
+			renumber    : false,
+			hexadecimal : false,
+			quotes      : 'single',
+			escapeless  : false,
+			compact     : false,
+			parentheses : true,
+			semicolons  : true
+		},
+		parse             : null,
+		comment           : true,
+		sourceMap         : undefined,
+		sourceMapRoot     : null,
+		sourceMapWithCode : false,
+		directive         : false,
+		verbatim          : undefined
+	},
+
+	Syntax : {
+		AssignmentExpression    : 'AssignmentExpression',
+		ArrayExpression         : 'ArrayExpression',
+		ArrayPattern            : 'ArrayPattern',
+		BlockStatement          : 'BlockStatement',
+		BinaryExpression        : 'BinaryExpression',
+		BreakStatement          : 'BreakStatement',
+		CallExpression          : 'CallExpression',
+		CatchClause             : 'CatchClause',
+		ComprehensionBlock      : 'ComprehensionBlock',
+		ComprehensionExpression : 'ComprehensionExpression',
+		ConditionalExpression   : 'ConditionalExpression',
+		ContinueStatement       : 'ContinueStatement',
+		DirectiveStatement      : 'DirectiveStatement',
+		DoWhileStatement        : 'DoWhileStatement',
+		DebuggerStatement       : 'DebuggerStatement',
+		EmptyStatement          : 'EmptyStatement',
+		ExpressionStatement     : 'ExpressionStatement',
+		ForStatement            : 'ForStatement',
+		ForInStatement          : 'ForInStatement',
+		FunctionDeclaration     : 'FunctionDeclaration',
+		FunctionExpression      : 'FunctionExpression',
+		Identifier              : 'Identifier',
+		IfStatement             : 'IfStatement',
+		Literal                 : 'Literal',
+		LabeledStatement        : 'LabeledStatement',
+		LogicalExpression       : 'LogicalExpression',
+		MemberExpression        : 'MemberExpression',
+		NewExpression           : 'NewExpression',
+		ObjectExpression        : 'ObjectExpression',
+		ObjectPattern           : 'ObjectPattern',
+		Program                 : 'Program',
+		Property                : 'Property',
+		ReturnStatement         : 'ReturnStatement',
+		SequenceExpression      : 'SequenceExpression',
+		SwitchStatement         : 'SwitchStatement',
+		SwitchCase              : 'SwitchCase',
+		ThisExpression          : 'ThisExpression',
+		ThrowStatement          : 'ThrowStatement',
+		TryStatement            : 'TryStatement',
+		UnaryExpression         : 'UnaryExpression',
+		UpdateExpression        : 'UpdateExpression',
+		VariableDeclaration     : 'VariableDeclaration',
+		VariableDeclarator      : 'VariableDeclarator',
+		WhileStatement          : 'WhileStatement',
+		WithStatement           : 'WithStatement',
+		YieldExpression         : 'YieldExpression'
+	}
+
+};

@@ -1,7 +1,15 @@
+TODO:
+=====
+
+esprima profiler added.
+* separate widget from profiler
+* refactor code
+* update readme.md (and describe two profilers)
+
 jsprofiler v1.3
 ==========
 
-Stand-alone Javascript profiler + simple widget.
+Standalone javascript profiler + simple widget.
 Using this profiler allows to find bottlenecks of your javascript application.
 
 License
