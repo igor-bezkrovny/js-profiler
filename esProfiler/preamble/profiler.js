@@ -362,26 +362,11 @@ jsProfiler.instrumentationData = jsProfiler.instrumentationData || [];
 						profileRecord.all.calls++;
 						profileRecord.all.total += duration;
 						profileRecord.all.lastCallTime = stopTime;
-						/*if (profileRecord.all.calls > 0) {
-							profileRecord.all.min = Math.min(profileRecord.all.min, duration);
-							profileRecord.all.max = Math.max(profileRecord.all.max, duration);
-						} else {
-							profileRecord.all.min = duration;
-							profileRecord.all.max = duration;
-						}*/
 
 						var selfDuration = duration - notSelfTime;
 						profileRecord.own.calls++;
 						profileRecord.own.total += selfDuration;
 						profileRecord.own.lastCallTime = stopTime;
-						/*if (profileRecord.own.calls > 0) {
-							profileRecord.own.min = Math.min(profileRecord.own.min, selfDuration);
-							profileRecord.own.max = Math.max(profileRecord.own.max, selfDuration);
-						} else {
-
-							profileRecord.own.min = selfDuration;
-							profileRecord.own.max = selfDuration;
-						}*/
 					}
 
 					var l = timeStack.length;

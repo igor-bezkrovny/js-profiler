@@ -16,7 +16,7 @@ workerId = setInterval(function () {
 	// update rows text
 	var num = Math.max(report.length, dataFromServer.functionsServerRequestedNum);
 	for (i = 0; i < num; i++) {
-		var d = report[i], allAvg = 0, ownAvg = 0, drawAvg = 0, ownTimeChanged = false, drawTimeChanged = false;
+		var d = report[i];
 
 		// whole d can be serialized, but for now it sent field per field to explain every field
 		dataToSend.push({
