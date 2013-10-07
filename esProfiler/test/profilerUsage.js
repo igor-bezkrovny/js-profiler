@@ -46,3 +46,35 @@ workerId = setInterval(function () {
 
 }, 500); // EVERY 500 ms we update server about profiler measurements
 
+
+
+/**
+ * Sort Methods
+ * @enum {function(a:ProfilerRecord, b:ProfilerRecord) : number}
+ */
+var profilerSortMethods = {
+	bySelfTotalTime : function (a, b) {
+		if (a.own.total > b.own.total) {
+			return -1;
+		}
+		return 1;
+	},
+	byTotalTime     : function (a, b) {
+		if (a.all.total > b.all.total) {
+			return -1;
+		}
+		return 1;
+	},
+	byCalls         : function (a, b) {
+		if (a.own.calls > b.own.calls) {
+			return -1;
+		}
+		return 1;
+	},
+	byDrawTime         : function (a, b) {
+		if (a.draw.total > b.draw.total) {
+			return -1;
+		}
+		return 1;
+	}
+};
