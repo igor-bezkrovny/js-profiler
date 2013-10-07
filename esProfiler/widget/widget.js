@@ -242,11 +242,11 @@
 					var elTable = document.getElementById(widgetId + ".table");
 					elTable.innerHTML = null;
 					// create header
-					elTable.appendChild(createTableRow(null, "2|function", "4|self time, ms", "4|all time, ms", "4|draw time, ms", "calls", "redraws"));
-					elTable.appendChild(createTableRow(null, "location", "name", "total", "max", "min", "avg", "total", "max", "min", "avg", "total", "max", "min", "avg", "", ""));
+					elTable.appendChild(createTableRow(null, "2|function", "2|self time, ms", "2|all time, ms", "2|draw time, ms", "calls", "redraws", "fps"));
+					elTable.appendChild(createTableRow(null, "location", "name", "total", "avg", "total", "avg", "total", "avg", "", "", ""));
 					// create rows
 					for (i = 0; i < widgetRows; i++) {
-						elTable.appendChild(createTableRow(i, "-", "-", null, null, null, null, null, null, null, null, null, null, null, null, null, null));
+						elTable.appendChild(createTableRow(i, "-", "-", null, null, null, null, null, null, null, null, null));
 					}
 				}
 
@@ -276,11 +276,11 @@
 
 						updateTableRow(
 							ownTimeChanged || drawTimeChanged,
-							i, JSON.stringify(report[i].loc["start"]), report[i].id, d.own.total, d.own.max, d.own.min, ownAvg, d.all.total, d.all.max, d.all.min, allAvg, d.draw.total, d.draw.max, d.draw.min, drawAvg, d.own.calls, d.draw.calls
+							i, JSON.stringify(report[i].loc["start"]), report[i].id, d.own.total, ownAvg, d.all.total, allAvg, d.draw.total, drawAvg, d.own.calls, d.draw.calls, d.fps.getFPS()
 						);
 						//d.updated = false;
 					} else {
-						updateTableRow(false, i, "-", "-", "", "", "", "", "", "", "", "", "", "", "", "", "", "");
+						updateTableRow(false, i, "-", "-", "", "", "", "", "", "", "", "", "");
 					}
 				}
 

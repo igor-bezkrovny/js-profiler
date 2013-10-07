@@ -116,7 +116,7 @@ jsProfiler.instrumentationData = jsProfiler.instrumentationData || [];
 		 * @template T
 		 */
 		processLater : function (callBackFunc, thisArg, callBackData, timeOutMS) {
-			var timerId = null, startTime = getMilliseconds();
+			var timerId = null;
 
 			var listener = function () {
 				if (timerId !== null) {
@@ -172,6 +172,46 @@ jsProfiler.instrumentationData = jsProfiler.instrumentationData || [];
 	}
 
 	/**
+	 * @class ProfilerFPS
+	 * @constructor
+	 */
+	function ProfilerFPS() {
+		/**
+		 * @public
+		 * @type {number}
+		 */
+		this.calls = 0;
+
+		/**
+		 * @private
+		 * @type {number}
+		 */
+		this.measureStartTime = getMilliseconds();
+
+		/**
+		 * @private
+		 * @type {number}
+		 */
+		this.previousFPS = 0;
+	}
+
+	/**
+	 * @public
+	 * @returns {number}
+	 */
+	ProfilerFPS.prototype.getFPS = function() {
+		var duration = getMilliseconds() - this.measureStartTime;
+		if(duration < 1) {
+			duration = 1
+		}
+
+		this.previousFPS = this.previousFPS * 0.3 + this.calls * (1000 / duration) * 0.7;
+		this.calls = 0;
+		this.measureStartTime = getMilliseconds();
+		return this.previousFPS;
+	};
+
+	/**
 	 * @class ProfilerRecord
 	 * @param {string} id
 	 * @param {object} loc
@@ -198,6 +238,8 @@ jsProfiler.instrumentationData = jsProfiler.instrumentationData || [];
 		 * @type {ProfilerTimings}
 		 */
 		this.draw = new ProfilerTimings();
+
+		this.fps = new ProfilerFPS();
 
 		/**
 		 * @public
@@ -249,13 +291,13 @@ jsProfiler.instrumentationData = jsProfiler.instrumentationData || [];
 						profileRecord.draw.calls++;
 						profileRecord.draw.total += duration;
 						profileRecord.draw.lastCallTime = stopTime;
-						if (profileRecord.draw.calls > 0) {
+						/*if (profileRecord.draw.calls > 0) {
 							profileRecord.draw.min = Math.min(profileRecord.draw.min, duration);
 							profileRecord.draw.max = Math.max(profileRecord.draw.max, duration);
 						} else {
 							profileRecord.draw.min = duration;
 							profileRecord.draw.max = duration;
-						}
+						}*/
 					}
 				});
 			}
@@ -315,29 +357,31 @@ jsProfiler.instrumentationData = jsProfiler.instrumentationData || [];
 						/** @type {ProfilerRecord} */
 						var profileRecord = global.instrumentationData[functionIndex];
 
+						profileRecord.fps.calls++;
+
 						profileRecord.all.calls++;
 						profileRecord.all.total += duration;
 						profileRecord.all.lastCallTime = stopTime;
-						if (profileRecord.all.calls > 0) {
+						/*if (profileRecord.all.calls > 0) {
 							profileRecord.all.min = Math.min(profileRecord.all.min, duration);
 							profileRecord.all.max = Math.max(profileRecord.all.max, duration);
 						} else {
 							profileRecord.all.min = duration;
 							profileRecord.all.max = duration;
-						}
+						}*/
 
 						var selfDuration = duration - notSelfTime;
 						profileRecord.own.calls++;
 						profileRecord.own.total += selfDuration;
 						profileRecord.own.lastCallTime = stopTime;
-						if (profileRecord.own.calls > 0) {
+						/*if (profileRecord.own.calls > 0) {
 							profileRecord.own.min = Math.min(profileRecord.own.min, selfDuration);
 							profileRecord.own.max = Math.max(profileRecord.own.max, selfDuration);
 						} else {
 
 							profileRecord.own.min = selfDuration;
 							profileRecord.own.max = selfDuration;
-						}
+						}*/
 					}
 
 					var l = timeStack.length;
