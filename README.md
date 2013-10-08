@@ -1,12 +1,13 @@
+esprima profiler added.
+
 TODO:
 =====
-
-esprima profiler added.
 * separate widget from profiler
 * refactor code
 * update readme.md (and describe both profilers)
 
-jsprofiler v1.3
+
+js-profiler
 ==========
 
 Standalone javascript profiler + simple widget.
@@ -30,12 +31,14 @@ p.profileObject('obj', obj, true);
 p.attachWidget(100);
 ```
 
-Advanced usage:
+Widget configuration:
 ===============
 
 ```JavaScript
 // set X coordinate of profiler
-p.getProfilerWidgetConfiguration().x = 640;
+var p = jsProfiler.widget.getProfilerWidgetConfiguration()
+
+p.x = 640;
 
 // pause profiler
 p.pauseProfiler();
@@ -47,6 +50,61 @@ p.continueProfiler();
 p.getProfilerWidgetConfiguration().sortMethod = p.widgetSortMethods.bySelfTotalTime;
 ```
 
+Default configuration:
+```JavaScript
+	/**
+	 * @public
+	 */
+	var profilerWidgetConfiguration = {
+		/**
+		 * @public
+		 * @type {number}
+		 */
+		x : 0,
+
+		/**
+		 * @public
+		 * @type {number}
+		 */
+		y : 0,
+
+		/**
+		 * @public
+		 * @type {number}
+		 */
+		rows : 20,
+
+		/**
+		 * @public
+		 * @type {boolean}
+		 */
+		showChangedRows : true,
+
+		/**
+		 * @public
+		 * @type {number}
+		 */
+		timeChangedRowsShown : 2000,
+
+		/**
+		 * @public
+		 */
+		hotKeyCodes : {
+			"hide"             : 53,
+			"show"             : 54,
+			"pauseProfiler"    : 55,
+			"continueProfiler" : 56,
+			"clear"            : 57
+		},
+
+		/**
+		 * @public
+		 * @type {profilerWidgetSortMethods}
+		 */
+		sortMethod : profilerWidgetSortMethods.byRenderTime
+	};
+```
+
 Full API
 ========
 
@@ -54,6 +112,18 @@ See JSDoc's in profile.js for full API and parameter names/types
 
 Changelog
 =========
+
+1.6
+* 1. jsProfiler is no more supported. Please use esProfiler instead. All future changes will reflect only esProfiler.
+* 2. widget optimized
+* 3. profiler core optimized
+* 4. min/max timings removed - they were nice, but useless values, that had used cpu/memory.
+* 5. browser render time metric added (experimental)
+* 6. widget is separated from profiler core.
+* 7. hot keys added to widget/widget configuration, widget subscribes to key events automatically
+
+1.5
+* 1. esProfiler added
 
 1.4
 * 1. profiling properties created with Object.defineProperty now just skips such property instead of crash

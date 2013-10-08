@@ -1,4 +1,6 @@
-(function () {
+// Widget should be used only with instrumented code loaded before!
+
+(function (global) {
 
 	/**
 	 * Sort Methods for widget
@@ -23,7 +25,7 @@
 			}
 			return 1;
 		},
-		byRenderTime         : function (a, b) {
+		byRenderTime    : function (a, b) {
 			if (a.renderTotalTime > b.renderTotalTime) {
 				return -1;
 			}
@@ -35,58 +37,57 @@
 	 * @public
 	 */
 	var profilerWidgetConfiguration = {
-			/**
-			 * @public
-			 * @type {number}
-			 */
-			x : 0,
-
-			/**
-			 * @public
-			 * @type {number}
-			 */
-			y : 0,
-
-			/**
-			 * @public
-			 * @type {number}
-			 */
-			rows : 20,
-
-			/**
-			 * @public
-			 * @type {boolean}
-			 */
-			showChangedRows : true,
-
-			/**
-			 * @public
-			 * @type {number}
-			 */
-			timeChangedRowsShown : 2000,
-
-			/**
-			 * @public
-			 */
-			hotKeyCodes : {
-				"hide"             : 53,
-				"show"             : 54,
-				"pauseProfiler"    : 55,
-				"continueProfiler" : 56,
-				"clear"            : 57
-			},
+		/**
+		 * @public
+		 * @type {number}
+		 */
+		x : 0,
 
 		/**
-			 * @public
-			 * @type {profilerWidgetSortMethods}
-			 */
-			//sortMethod : profilerWidgetSortMethods.bySelfTotalTime
-			sortMethod : profilerWidgetSortMethods.byRenderTime
+		 * @public
+		 * @type {number}
+		 */
+		y : 0,
+
+		/**
+		 * @public
+		 * @type {number}
+		 */
+		rows : 20,
+
+		/**
+		 * @public
+		 * @type {boolean}
+		 */
+		showChangedRows : true,
+
+		/**
+		 * @public
+		 * @type {number}
+		 */
+		timeChangedRowsShown : 2000,
+
+		/**
+		 * @public
+		 */
+		hotKeyCodes : {
+			"hide"             : 53,
+			"show"             : 54,
+			"pauseProfiler"    : 55,
+			"continueProfiler" : 56,
+			"clear"            : 57
+		},
+
+		/**
+		 * @public
+		 * @type {profilerWidgetSortMethods}
+		 */
+		sortMethod : profilerWidgetSortMethods.byRenderTime
 	};
 
 	// Widget data
 	var isWidgetAttached = false,
-		widgetId = "profilerWidgetV1.4",
+		widgetId = "profilerWidgetV1.6",
 		widgetIntervalId = null,
 		widgetConfiguration = profilerWidgetConfiguration;
 
@@ -187,7 +188,7 @@
 						color = changed ? changedColors[rowIndex & 1] : notChangedColors[rowIndex & 1],
 						value = arguments[i];
 
-					if(typeof value === 'number') {
+					if (typeof value === 'number') {
 						value = value | 0;
 					}
 
@@ -220,7 +221,9 @@
 			widgetIntervalId = setInterval(function () {
 				var i,
 					time = jsProfiler.getMilliseconds(),
-					report = jsProfiler.getReport(function (record) { return record.calls > 0; });
+					report = jsProfiler.getReport(function (record) {
+						return record.calls > 0;
+					});
 
 				updateTableCoordinates();
 
@@ -292,4 +295,6 @@
 	};
 
 	widget.attachEventListeners();
-})();
+
+	global.widget = widget;
+})(jsProfiler);
