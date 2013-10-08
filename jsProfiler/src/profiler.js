@@ -200,17 +200,21 @@ var ibNameSpace = ibNameSpace || {};
 		 * @returns {Array.<ProfilerRecord>}
 		 */
 		getReport : function (filterFn) {
-			var result = [];
-
 			if (!ibNameSpace.utils.isFunction(filterFn)) {
 				filterFn = function () {
 					return true;
 				};
 			}
 
-			for (var i = profilerRecords.length - 1; i >= 0; i--) {
-				if (filterFn(profilerRecords[i])) {
-					result.push(profilerRecords[i]);
+			var result;
+			if(Array.prototype.filter) {
+				result = profilerRecords.filter(filterFn);
+			} else {
+				result = [];
+				for (var i = profilerRecords.length - 1; i >= 0; i--) {
+					if (filterFn(profilerRecords[i])) {
+						result.push(profilerRecords[i]);
+					}
 				}
 			}
 

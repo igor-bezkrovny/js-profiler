@@ -6,25 +6,25 @@
 	 */
 	var profilerWidgetSortMethods = {
 		bySelfTotalTime : function (a, b) {
-			if (a.own.total > b.own.total) {
+			if (a.ownTotalTime > b.ownTotalTime) {
 				return -1;
 			}
 			return 1;
 		},
 		byTotalTime     : function (a, b) {
-			if (a.all.total > b.all.total) {
+			if (a.allTotalTime > b.allTotalTime) {
 				return -1;
 			}
 			return 1;
 		},
 		byCalls         : function (a, b) {
-			if (a.own.calls > b.own.calls) {
+			if (a.calls > b.calls) {
 				return -1;
 			}
 			return 1;
 		},
-		byDrawTime         : function (a, b) {
-			if (a.draw.total > b.draw.total) {
+		byRenderTime         : function (a, b) {
+			if (a.renderTotalTime > b.renderTotalTime) {
 				return -1;
 			}
 			return 1;
@@ -81,7 +81,7 @@
 			 * @type {profilerWidgetSortMethods}
 			 */
 			//sortMethod : profilerWidgetSortMethods.bySelfTotalTime
-			sortMethod : profilerWidgetSortMethods.byDrawTime
+			sortMethod : profilerWidgetSortMethods.byRenderTime
 	};
 
 	// Widget data
@@ -216,37 +216,25 @@
 			el.appendChild(elTable);
 			updateTableCoordinates();
 
-			/*var elLogText = document.createElement('textarea');
-			 elLogText.id = widgetId + ".logText";
-			 elLogText.rows = 10;
-			 elLogText.columns = 100;
-			 elLogText.disabled = true;
-			 elLogText.readonly = true;
-			 elLogText.style.fontSize = '16px';
-			 elLogText.style.color = '#FFFFFF';
-			 elLogText.style.backgroundColor = '#444444';
-			 el.appendChild(elLogText); */
-
 			// widget handler/updater
 			widgetIntervalId = setInterval(function () {
-				var i, time = jsProfiler.getMilliseconds(),
-					report = jsProfiler.getReport(function (record) {
-						return record.own.calls > 0;
-					});
+				var i,
+					time = jsProfiler.getMilliseconds(),
+					report = jsProfiler.getReport(function (record) { return record.calls > 0; });
 
 				updateTableCoordinates();
 
-				// update rows according to current number
+				// update number of rows according to current widget rows number
 				if (widgetRows !== widgetConfiguration.rows) {
 					widgetRows = widgetConfiguration.rows;
 					var elTable = document.getElementById(widgetId + ".table");
 					elTable.innerHTML = null;
 					// create header
-					elTable.appendChild(createTableRow(null, "2|function", "2|self time, ms", "2|all time, ms", "2|draw time, ms", "calls", "redraws", "fps"));
-					elTable.appendChild(createTableRow(null, "location", "name", "total", "avg", "total", "avg", "total", "avg", "", "", ""));
+					elTable.appendChild(createTableRow(null, "2|function", "2|self time, ms", "2|all time, ms", "2|draw time, ms", "calls", "redraws"));
+					elTable.appendChild(createTableRow(null, "location", "name", "total", "avg", "total", "avg", "total", "avg", "", ""));
 					// create rows
 					for (i = 0; i < widgetRows; i++) {
-						elTable.appendChild(createTableRow(i, "-", "-", null, null, null, null, null, null, null, null, null));
+						elTable.appendChild(createTableRow(i, "-", "-", null, null, null, null, null, null, null, null));
 					}
 				}
 
@@ -258,35 +246,30 @@
 				// update rows text
 				for (i = 0; i < widgetRows; i++) {
 					if (i < report.length) {
-						var d = report[i], allAvg = 0, ownAvg = 0, drawAvg = 0, ownTimeChanged = false, drawTimeChanged = false;
-						if (d.all.calls > 0) {
-							allAvg = (d.all.total / d.all.calls) | 0;
+						var d = report[i], allAvg = 0, ownAvg = 0, drawAvg = 0, isChanged = false;
+
+						if (d.calls > 0) {
+							allAvg = (d.allTotalTime / d.calls) | 0;
+							ownAvg = (d.ownTotalTime / d.calls) | 0;
 						}
-						if (d.own.calls > 0) {
-							ownAvg = (d.own.total / d.own.calls) | 0;
-						}
-						if (d.draw.calls > 0) {
-							drawAvg = (d.draw.total / d.draw.calls) | 0;
+
+						if (d.renderCalls > 0) {
+							drawAvg = (d.renderTotalTime / d.renderCalls) | 0;
 						}
 
 						if (widgetConfiguration.showChangedRows) {
-							drawTimeChanged = time - d.draw.lastCallTime < widgetConfiguration.timeChangedRowsShown;
-							ownTimeChanged = time - d.own.lastCallTime < widgetConfiguration.timeChangedRowsShown;
+							isChanged = time - d.lastCallTime < widgetConfiguration.timeChangedRowsShown;
 						}
 
 						updateTableRow(
-							ownTimeChanged || drawTimeChanged,
-							i, JSON.stringify(report[i].loc["start"]), report[i].id, d.own.total, ownAvg, d.all.total, allAvg, d.draw.total, drawAvg, d.own.calls, d.draw.calls, d.fps.getFPS()
+							isChanged,
+							i, JSON.stringify(report[i].loc["start"]), report[i].id, d.ownTotalTime, ownAvg, d.allTotalTime, allAvg, d.renderTotalTime, drawAvg, d.calls, d.renderCalls
 						);
 						//d.updated = false;
 					} else {
-						updateTableRow(false, i, "-", "-", "", "", "", "", "", "", "", "", "");
+						updateTableRow(false, i, "-", "-", "", "", "", "", "", "", "", "");
 					}
 				}
-
-				//el = document.getElementById(widgetId + ".logText");
-				//el.innerHTML = profilerErrorLogText;
-				//el.scrollTop = el.scrollHeight;
 			}, updateInterval);
 		},
 

@@ -132,115 +132,12 @@ jsProfiler.instrumentationData = jsProfiler.instrumentationData || [];
 	};
 
 	/**
-	 * @class ProfilerTimings
-	 * @constructor
-	 */
-	function ProfilerTimings () {
-		/**
-		 * Number of function calls since last clear(), milliseconds
-		 * @public
-		 * @type {number}
-		 */
-		this.calls = 0;
-
-		/**
-		 * @public
-		 * @type {number}
-		 */
-		this.lastCallTime = getMilliseconds();
-
-		/**
-		 * Min execution time since last clear(), milliseconds
-		 * @public
-		 * @type {number}
-		 */
-		this.min = 0;
-
-		/**
-		 * Max execution time since last clear(), milliseconds
-		 * @public
-		 * @type {number}
-		 */
-		this.max = 0;
-
-		/**
-		 * Total execution time since last clear(), milliseconds
-		 * @public
-		 * @type {number}
-		 */
-		this.total = 0;
-	}
-
-	/**
-	 * @class ProfilerFPS
-	 * @constructor
-	 */
-	function ProfilerFPS() {
-		/**
-		 * @public
-		 * @type {number}
-		 */
-		this.calls = 0;
-
-		/**
-		 * @private
-		 * @type {number}
-		 */
-		this.measureStartTime = getMilliseconds();
-
-		/**
-		 * @private
-		 * @type {number}
-		 */
-		this.previousFPS = 0;
-	}
-
-	/**
-	 * @public
-	 * @returns {number}
-	 */
-	ProfilerFPS.prototype.getFPS = function() {
-		var duration = getMilliseconds() - this.measureStartTime;
-		if(duration < 1) {
-			duration = 1
-		}
-
-		this.previousFPS = this.previousFPS * 0.3 + this.calls * (1000 / duration) * 0.7;
-		this.calls = 0;
-		this.measureStartTime = getMilliseconds();
-		return this.previousFPS;
-	};
-
-	/**
 	 * @class ProfilerRecord
 	 * @param {string} id
 	 * @param {object} loc
 	 * @constructor
 	 */
 	function ProfilerRecord (id, loc) {
-		/**
-		 * Total SELF execution time since last clear(), milliseconds
-		 * @public
-		 * @type {ProfilerTimings}
-		 */
-		this.own = new ProfilerTimings();
-
-		/**
-		 * Total execution time including all internal calls since last clear(), milliseconds
-		 * @public
-		 * @type {ProfilerTimings}
-		 */
-		this.all = new ProfilerTimings();
-
-		/**
-		 * Browser Draw time as a result of calling this function, since last clear(), milliseconds
-		 * @public
-		 * @type {ProfilerTimings}
-		 */
-		this.draw = new ProfilerTimings();
-
-		this.fps = new ProfilerFPS();
-
 		/**
 		 * @public
 		 * @type {string}
@@ -252,12 +149,21 @@ jsProfiler.instrumentationData = jsProfiler.instrumentationData || [];
 		 * @type {Object}
 		 */
 		this.loc = loc;
+
+		// init
+		this.clear();
 	}
+
 	ProfilerRecord.prototype = {
-		clear : function() {
-			this.all = new ProfilerTimings();
-			this.own = new ProfilerTimings();
-			this.draw = new ProfilerTimings();
+		clear : function () {
+			this.calls = 0;
+			this.lastCallTime = getMilliseconds();
+
+			this.ownTotalTime = 0;
+			this.allTotalTime = 0;
+
+			this.renderCalls = 0;
+			this.renderTotalTime = 0;
 		}
 	};
 
@@ -274,7 +180,7 @@ jsProfiler.instrumentationData = jsProfiler.instrumentationData || [];
 		 * @public
 		 * @param {number} functionIndex
 		 */
-		measureRePaintTime : function(functionIndex) {
+		measureRePaintTime : function (functionIndex) {
 			var startTime = getMilliseconds();
 			// It is possible that we started draw time measurement, but browser have had another event in queue before out setTimeout, so restart measurement
 			if (rePaintMeasurementStarted) {
@@ -288,16 +194,8 @@ jsProfiler.instrumentationData = jsProfiler.instrumentationData || [];
 
 					rePaintMeasurementStarted = false;
 					if (!isProfilerPaused && duration > 0) {
-						profileRecord.draw.calls++;
-						profileRecord.draw.total += duration;
-						profileRecord.draw.lastCallTime = stopTime;
-						/*if (profileRecord.draw.calls > 0) {
-							profileRecord.draw.min = Math.min(profileRecord.draw.min, duration);
-							profileRecord.draw.max = Math.max(profileRecord.draw.max, duration);
-						} else {
-							profileRecord.draw.min = duration;
-							profileRecord.draw.max = duration;
-						}*/
+						profileRecord.renderCalls++;
+						profileRecord.renderTotalTime += duration;
 					}
 				});
 			}
@@ -307,10 +205,10 @@ jsProfiler.instrumentationData = jsProfiler.instrumentationData || [];
 		 * @public
 		 * @param {number} functionIndex
 		 */
-		markFunctionStart : function(functionIndex) {
+		markFunctionStart : function (functionIndex) {
 			callStack.push({
-				functionIndex: functionIndex,
-				startTime : getMilliseconds()
+				functionIndex : functionIndex,
+				startTime     : getMilliseconds()
 			});
 			timeStack.push(0);
 
@@ -322,7 +220,7 @@ jsProfiler.instrumentationData = jsProfiler.instrumentationData || [];
 		 * @param {number} functionIndex
 		 * @param {*} exception
 		 */
-		markFunctionException : function(functionIndex, exception) {
+		markFunctionException : function (functionIndex, exception) {
 			this.log("Exception in function " + JSON.stringify(global.instrumentationData[functionIndex].loc) + ": " + exception);
 		},
 
@@ -330,43 +228,40 @@ jsProfiler.instrumentationData = jsProfiler.instrumentationData || [];
 		 * @public
 		 * @param {number} functionIndex
 		 */
-		markFunctionEnd : function(functionIndex) {
+		markFunctionEnd : function (functionIndex) {
 			var stopTime = getMilliseconds();
 
 			// check for error
-			if(callStack.length > 0) {
+			if (callStack.length > 0) {
 				//
 				var callStackItem = callStack.pop();
 
 				// check for silent crash, if yes - notify, and search for correct index in callStack
-				if(callStackItem.functionIndex !== functionIndex) {
+				if (callStackItem.functionIndex !== functionIndex) {
 					this.log("ERROR: function " + JSON.stringify(global.instrumentationData[callStackItem.functionIndex].loc) + " crashed silently. We can't catch such exception via TRY-CATCH");
-					while(callStackItem = callStack.pop()) {
-						if(callStackItem.functionIndex === functionIndex) {
+					while (callStackItem = callStack.pop()) {
+						if (callStackItem.functionIndex === functionIndex) {
 							break;
 						}
 					}
 				}
 
-				if(callStackItem) {
+				if (callStackItem) {
 					var startTime = callStackItem.startTime,
 						duration = stopTime - startTime,
-                    	notSelfTime = timeStack.pop();
+						notSelfTime = timeStack.pop();
 
 					if (!isProfilerPaused) {
+						var selfDuration = duration - notSelfTime;
+
 						/** @type {ProfilerRecord} */
 						var profileRecord = global.instrumentationData[functionIndex];
 
-						profileRecord.fps.calls++;
+						profileRecord.calls++;
+						profileRecord.lastCallTime = stopTime;
 
-						profileRecord.all.calls++;
-						profileRecord.all.total += duration;
-						profileRecord.all.lastCallTime = stopTime;
-
-						var selfDuration = duration - notSelfTime;
-						profileRecord.own.calls++;
-						profileRecord.own.total += selfDuration;
-						profileRecord.own.lastCallTime = stopTime;
+						profileRecord.allTotalTime += duration;
+						profileRecord.ownTotalTime += selfDuration;
 					}
 
 					var l = timeStack.length;
@@ -387,7 +282,7 @@ jsProfiler.instrumentationData = jsProfiler.instrumentationData || [];
 		/**
 		 * @public
 		 */
-		pauseProfiler                  : function () {
+		pauseProfiler : function () {
 			isProfilerPaused = true;
 		},
 
@@ -414,18 +309,23 @@ jsProfiler.instrumentationData = jsProfiler.instrumentationData || [];
 		 * @returns {Array.<ProfilerRecord>}
 		 */
 		getReport : function (filterFn) {
-			var result = [],
-				records = global.instrumentationData;
-
 			if (!utils.isFunction(filterFn)) {
 				filterFn = function () {
 					return true;
 				};
 			}
 
-			for (var i = records.length - 1; i >= 0; i--) {
-				if (filterFn(records[i])) {
-					result.push(records[i]);
+			var result,
+				records = global.instrumentationData;
+
+			if(utils.isFunction(Array.prototype.filter)) {
+				result = records.filter(filterFn);
+			} else {
+				result = [];
+				for (var i = records.length - 1; i >= 0; i--) {
+					if (filterFn(records[i])) {
+						result.push(records[i]);
+					}
 				}
 			}
 
@@ -434,8 +334,8 @@ jsProfiler.instrumentationData = jsProfiler.instrumentationData || [];
 
 		getMilliseconds : null,
 
-		log : function(obj) {
-			if(typeof obj === 'object') {
+		log : function (obj) {
+			if (typeof obj === 'object') {
 				console.log(JSON.stringify(obj));
 			} else {
 				console.log(obj);
@@ -443,26 +343,27 @@ jsProfiler.instrumentationData = jsProfiler.instrumentationData || [];
 		}
 	});
 
-	/**
-	 * Init instrumentation Data and other data
-	 */
-	function init() {
-		// create getMilliseconds method
-		if(typeof window !== 'undefined' && typeof window.performance !== 'undefined') {
-			getMilliseconds = function() { return window.performance.now() };
-		} else if (typeof Date.now !== 'undefined') {
-			getMilliseconds = function() { return Date.now() };
-		} else {
-			getMilliseconds = function() { return (new Date()).getTime(); }
-		}
-
-		var data = global.instrumentationData;
-		for(var i = data.length - 1; i >= 0; i--) {
-			data[i] = new ProfilerRecord(data[i]["id"], data[i]["loc"]);
+	// create getMilliseconds method
+	if (typeof window !== 'undefined' && typeof window["performance"] !== 'undefined' && typeof window["performance"]["now"] !== 'undefined') {
+		getMilliseconds = function () {
+			return window.performance.now()
+		};
+	} else if (typeof Date.now !== 'undefined') {
+		getMilliseconds = function () {
+			return Date.now()
+		};
+	} else {
+		getMilliseconds = function () {
+			return (new Date()).getTime();
 		}
 	}
-	init();
-
 	global.getMilliseconds = getMilliseconds;
+
+	// Init instrumentation Data
+	var data = global.instrumentationData;
+	for (var i = data.length - 1; i >= 0; i--) {
+		data[i] = new ProfilerRecord(data[i]["id"], data[i]["loc"]);
+	}
+
 })(jsProfiler);
 
