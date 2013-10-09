@@ -310,8 +310,8 @@ jsProfiler.instrumentationData = jsProfiler.instrumentationData || [];
 		 */
 		getReport : function (filterFn) {
 			if (!utils.isFunction(filterFn)) {
-				filterFn = function () {
-					return true;
+				filterFn = function (record) {
+					return record.calls > 0;
 				};
 			}
 
