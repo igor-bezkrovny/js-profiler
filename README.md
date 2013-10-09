@@ -2,7 +2,6 @@ esprima profiler added.
 
 TODO:
 =====
-* separate widget from profiler
 * refactor code
 * update readme.md (and describe both profilers)
 
