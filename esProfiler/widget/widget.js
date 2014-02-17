@@ -82,16 +82,18 @@
 		 * @public
 		 * @type {profilerWidgetSortMethods}
 		 */
-		sortMethod : profilerWidgetSortMethods.byRenderTime
+		sortMethod : profilerWidgetSortMethods.bySelfTotalTime
 	};
 
 	// Widget data
 	var isWidgetAttached = false,
-		widgetId = "profilerWidgetV1.6",
+		widgetId = "profilerWidgetV1.7",
 		widgetIntervalId = null,
 		widgetConfiguration = profilerWidgetConfiguration;
 
 	var widget = {
+		cfg : profilerWidgetConfiguration,
+		sortMethods : profilerWidgetSortMethods,
 
 		/**
 		 * @public

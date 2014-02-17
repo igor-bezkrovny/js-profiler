@@ -5,6 +5,60 @@
 </head>
 <body>
 
+	<pre>
+
+		to run example:
+			- run runFirst.cmd
+			- open runAfter.html
+
+		to use in own project:
+			- edit runFirst.cmd (last two parameters of main.js)
+				syntax: node ../main.js input_javascript_file output_javascript_file
+			- add instrumented javascript file instead of original javascript file into your index.html
+			- add ../widget/widget.js to your index.html as latest loaded script
+
+		if widget is included, default key codes are:
+			- press 5 to hide profiler
+			- press 6 to show profiler
+			- press 7 to pause profiler
+			- press 8 to continue profiler
+			- press 9 to clear profiling data
+
+		Widget settings:
+
+			// possible sort methods
+			jsProfiler.widget.sortMethods = {
+				bySelfTotalTime : function,
+				byTotalTime     : function,
+				byCalls         : function,
+				byRenderTime    : function
+			};
+
+			// sort method
+			jsProfiler.widget.cfg.sortMethod = jsProfiler.widget.sortMethods.bySelfTotalTime;
+
+			// change hot keys (or write something incorrect to disable that key usage in profiler)
+			jsProfiler.widget.cfg.hotKeyCodes = {
+				"hide"             : 53,
+				"show"             : 54,
+				"pauseProfiler"    : 55,
+				"continueProfiler" : 56,
+				"clear"            : 57
+			}
+
+			// widget top left coordinates in pixels
+		    jsProfiler.widget.cfg.x = 170;
+		    jsProfiler.widget.cfg.y = 500;
+
+			// number of rows shown
+			jsProfiler.widget.cfg.rows = 20;
+
+			// in ms
+			jsProfiler.widget.cfg.timeChangedRowsShown = 2000;
+
+
+	</pre>
+
 	<!-- instrumented js file -->
 	<script src="example.instrumented.js"></script>
 
