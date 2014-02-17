@@ -1,0 +1,1 @@
+node ../main.js example.js example.instrumented.js
